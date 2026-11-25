@@ -7,7 +7,7 @@ final class HaruSpeechCppSession: HaruFrameSession {
         var text = ""
     }
 
-    private static let maxSeconds = 600
+    private static let maxSeconds = 120
     private let model: OpaquePointer
     private let dialogue: OpaquePointer
     private let output: Output
