@@ -397,7 +397,7 @@ private struct ConversationView: View {
         Button(engine.canResumeDownload ? "ダウンロードを再開" : "モデルをダウンロード", action: downloadModel)
             .disabled(!canConfigure)
         Text(engine == .mlx ? "通信量は約10.5 GB。日本語用モデルとして約5.5 GBを保存します。"
-             : "量子化済みのQ6_Kを約5.6 GB取得します。")
+             : "Q5_Kを約5.05 GB取得します。Q4_K（約4.52 GB）もGGUFファイルから読み込めます。")
             .font(.footnote)
             .foregroundStyle(.secondary)
         if engine.hasPartialDownload {
