@@ -2,11 +2,11 @@ import CryptoKit
 import Foundation
 
 enum HaruGGUFInstaller {
-    static let fileName = "Haru-4B-Q6_K.gguf"
-    static let sourceBytes = 5_605_707_520
-    private static let sha256 = "8db05e86acca046bc183d4e30fbda22ac775ba4767ae5a10bcd0d48f8d7db793"
+    static let fileName = "Haru-4B-Q5_K.gguf"
+    static let sourceBytes = 5_047_781_120
+    private static let sha256 = "9b0f703a03c764d14a8e66ff8af1fa20a444d3cf2510c145288a5accf7d935ce"
     private static let source = URL(string:
-        "https://huggingface.co/sakasegawa/Haru-4B-GGUF/resolve/fc026182f7bbfaa0400b2d44358a5e9e327b957f/Haru-4B-Q6_K.gguf")!
+        "https://huggingface.co/sakasegawa/Haru-4B-GGUF/resolve/fc026182f7bbfaa0400b2d44358a5e9e327b957f/Haru-4B-Q5_K.gguf")!
     static let directory = HaruModelInstaller.directory.appending(path: "GGUF", directoryHint: .isDirectory)
     static let installed = directory.appending(path: fileName)
     static let local = URL.documentsDirectory.appending(path: fileName)
