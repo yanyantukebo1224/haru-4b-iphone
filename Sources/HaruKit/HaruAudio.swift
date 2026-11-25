@@ -135,7 +135,7 @@ final class HaruAudio {
     let playback: HaruPlayback
     private let session = AVAudioSession.sharedInstance()
     private let format = AVAudioFormat(standardFormatWithSampleRate: HaruSession.sampleRate, channels: 1)!
-    private var sink: AVAudioSinkNode?
+    private var tappedInput: AVAudioInputNode?
     private var sourceNode: AVAudioSourceNode?
     private var mic: HaruMicInput?
     private var previous: (AVAudioSession.Category, AVAudioSession.Mode, AVAudioSession.CategoryOptions)?
@@ -185,14 +185,14 @@ final class HaruAudio {
                 playback.begin(firstCapture: time)
                 capture(samples, time)
             }, level: level)
-            let sink = AVAudioSinkNode { time, count, buffers in
-                mic.push(buffers, count: Int(count), hostTime: time.pointee.mHostTime)
-                return noErr
-            }
             self.mic = mic
-            self.sink = sink
-            engine.attach(sink)
-            engine.connect(input, to: sink, format: source)
+            // Capture from the input node's tap instead of connecting a custom
+            // sink node into the input graph. Some iOS routes/devices reject
+            // that graph with CoreAudio's opaque "nope" (1852797029) error.
+            input.installTap(onBus: 0, bufferSize: 1024, format: source) { buffer, time in
+                mic.push(buffer.audioBufferList, count: Int(buffer.frameLength), hostTime: time.hostTime)
+            }
+            tappedInput = input
             engine.prepare()
             try engine.start()
             startedAt = ProcessInfo.processInfo.systemUptime
@@ -207,7 +207,10 @@ final class HaruAudio {
         engine.stop()
         mic?.stop()
         mic = nil
-        if let sink { engine.detach(sink); self.sink = nil }
+        if let tappedInput {
+            tappedInput.removeTap(onBus: 0)
+            self.tappedInput = nil
+        }
         if let sourceNode { engine.detach(sourceNode); self.sourceNode = nil }
         if let previous {
             if #available(iOS 18.2, *), let previousEchoPreference {
